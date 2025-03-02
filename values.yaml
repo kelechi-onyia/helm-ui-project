@@ -1,0 +1,19 @@
+branches:
+- develop
+- main
+- master
+- feature
+environments:
+- prod
+- staging
+- test
+image:
+  pullPolicy: IfNotPresent
+  repository: nginx
+  tag: 1.19.1
+ingress:
+  enabled: false
+  host: hello-world.com
+service:
+  port: 80
+  type: ClusterIP
