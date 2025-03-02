@@ -10,10 +10,10 @@ The required tools to run this project
 
 > Journal of steps I did
 - Install python environment
-    : python -m venv ./venv-helm-ui
-    : source ./venv-helm-ui/bin/activate
-    : pip install -r requirements.txt
+  - python -m venv ./venv-helm-ui
+  - source ./venv-helm-ui/bin/activate
+  - pip install -r requirements.txt
 - create react app
-  : npx create-react-app frontend
-  : npm start
+  - npx create-react-app frontend
+  - npm start
   
