@@ -1,38 +1,331 @@
-.App {
-  text-align: center;
+/* Global app styles */
+* {
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Material-UI Form Field Enhancements */
+.MuiTextField-root {
+  margin-bottom: 16px !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.MuiFormControl-root {
+  width: 100%;
+  margin-bottom: 16px !important;
+}
+
+/* Enhanced input field styling */
+.MuiOutlinedInput-root {
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiOutlinedInput-root:hover {
+  background-color: #fafafa;
+}
+
+.MuiOutlinedInput-root.Mui-focused {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+/* Read-only and disabled field styling */
+.MuiOutlinedInput-root.Mui-disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
+  border-color: #e0e0e0;
+  border-style: dashed;
+}
+
+.MuiInputBase-input.Mui-disabled {
+  color: rgba(0, 0, 0, 0.5) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.5) !important;
+  font-weight: 500;
+}
+
+/* Label styling */
+.MuiFormLabel-root {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.MuiFormLabel-root.Mui-focused {
+  font-weight: 600;
+}
+
+.MuiFormLabel-root.Mui-disabled {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Helper text styling */
+.MuiFormHelperText-root {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.MuiFormHelperText-root.Mui-disabled {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Select dropdown styling */
+.MuiSelect-select {
+  padding: 14px 14px !important;
+}
+
+.MuiSelect-icon {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.MuiSelect-select.Mui-disabled {
+  cursor: not-allowed;
+}
+
+/* Checkbox and Radio styling */
+.MuiCheckbox-root,
+.MuiRadio-root {
+  padding: 8px;
+}
+
+.MuiCheckbox-root.Mui-disabled,
+.MuiRadio-root.Mui-disabled {
+  color: rgba(0, 0, 0, 0.26) !important;
+}
+
+.MuiFormControlLabel-root {
+  margin-bottom: 8px;
+}
+
+/* Array/List field styling */
+.array-item {
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+  transition: all 0.2s ease-in-out;
+}
+
+.array-item:hover {
+  border-color: #bdbdbd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.array-item-toolbox {
   display: flex;
-  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+/* Field group styling */
+.field-object {
+  padding: 16px;
+  border-left: 3px solid #1976d2;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* Form section spacing */
+.MuiAccordionDetails-root {
+  padding: 24px 16px !important;
+}
+
+.MuiAccordionDetails-root .MuiFormControl-root:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Enhanced error styling */
+.MuiFormHelperText-root.Mui-error {
+  font-weight: 500;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 4px;
 }
 
-.App-link {
-  color: #61dafb;
+.MuiOutlinedInput-root.Mui-error {
+  background-color: #fff5f5;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.MuiOutlinedInput-root.Mui-error:hover {
+  background-color: #fff0f0;
+}
+
+/* Input adornments */
+.MuiInputAdornment-root {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* Boolean (Switch/Checkbox) fields */
+.MuiSwitch-root {
+  margin: 8px 8px 8px 0;
+}
+
+/* Number input styling */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* Focus visible outline for accessibility */
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-width: 2px;
+}
+
+/* Accordion improvements */
+.MuiAccordion-root {
+  margin-bottom: 8px !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.MuiAccordion-root:before {
+  display: none;
+}
+
+.MuiAccordion-root.Mui-expanded {
+  margin-bottom: 8px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.MuiAccordionSummary-root {
+  background-color: #fafafa;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.MuiAccordionSummary-root:hover {
+  background-color: #f0f0f0;
+}
+
+.MuiAccordionSummary-root.Mui-expanded {
+  background-color: #e8f4fd;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Smooth transitions */
+.MuiPaper-root,
+.MuiAlert-root,
+.MuiButton-root,
+.MuiOutlinedInput-root,
+.MuiAccordion-root {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Custom styling for field descriptions */
+.field-description {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 4px;
+  line-height: 1.5;
+  padding-left: 2px;
+}
+
+/* Improved button spacing in arrays */
+.MuiButton-root + .MuiButton-root {
+  margin-left: 8px !important;
+}
+
+/* Loading overlay for disabled fields */
+.MuiFormControl-root.Mui-disabled {
+  position: relative;
+}
+
+/* Better visual hierarchy for nested objects */
+.field-object .field-object {
+  border-left-color: #42a5f5;
+  background-color: #ffffff;
+  padding: 12px;
+  margin-left: 8px;
+}
+
+/* Responsive improvements */
+@media (max-width: 600px) {
+  .MuiFormControl-root {
+    margin-bottom: 12px !important;
   }
-  to {
-    transform: rotate(360deg);
+
+  .MuiAccordionDetails-root {
+    padding: 16px 12px !important;
   }
+
+  .field-object {
+    padding: 12px;
+  }
+}
+
+/* Custom styling for specific field types */
+
+/* String fields with long content */
+.MuiOutlinedInput-input[type="text"] {
+  min-height: 20px;
+}
+
+/* Multiline text areas */
+.MuiOutlinedInput-inputMultiline {
+  padding: 14px !important;
+  line-height: 1.5;
+}
+
+/* Select menus */
+.MuiMenu-paper {
+  max-height: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.MuiMenuItem-root {
+  padding: 12px 16px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.MuiMenuItem-root:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+
+.MuiMenuItem-root.Mui-selected {
+  background-color: rgba(25, 118, 210, 0.12);
+  font-weight: 500;
+}
+
+.MuiMenuItem-root.Mui-selected:hover {
+  background-color: rgba(25, 118, 210, 0.16);
+}
+
+/* Chip enhancements for tags/arrays */
+.MuiChip-root {
+  margin: 2px 4px 2px 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiChip-root:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form validation improvements */
+.MuiFormControl-root.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-width: 2px;
+}
+
+/* Improved focus indicators for accessibility */
+.MuiButton-root:focus-visible,
+.MuiIconButton-root:focus-visible {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+/* Hide default submit button if present */
+button[type="submit"].btn.btn-info {
+  display: none;
 }

@@ -1,0 +1,39 @@
+branches:
+  - develop
+  - main
+  - master
+  - feature
+  - release
+environments:
+  - prod
+  - staging
+  - test
+frontend:
+  - config:
+      - port: 80
+        name: nginx
+image:
+  pullPolicy: IfNotPresent
+  repository: nginx
+  tag: 1.19.1
+ingress:
+  enabled: false
+  hosts:
+    - host: hello-world.com
+      tls:
+        scretName: hello-tls
+    - host: foo-bar.com
+      tls:
+        scretName: foo-bar-tls
+service:
+  port: 8080
+  type: ClusterIP
+database:
+  postgres:
+    host: 127.0.0.1
+    user: postgres
+    pass: hackerman
+    port: 5432
+  redis:
+    host: 127.0.0.1
+    port: 6732

@@ -1,0 +1,150 @@
+# Configuration for the Helm UI
+# This file defines metadata for the UI form generation
+# Customize this file to match your values.yaml structure
+
+# Define which fields should be read-only in the UI
+readonly_fields:
+  - image.repository
+  - image.pullPolicy
+  - image.registry
+  # - ingress.hosts  # Uncomment to make the entire hosts array read-only
+
+# Define which fields should be rendered as dropdowns (enums)
+# The actual values will be pulled from the values.yaml file
+enum_fields:
+  - environments
+  - branches
+
+# Define custom titles for fields (optional)
+# If not specified, titles are auto-generated from field names
+field_titles:
+  ingress.hosts: "Ingress Hosts"
+  ingress.hosts.host: "Host"
+  ingress.hosts.tls: "TLS Settings"
+  database.postgres: "PostgreSQL"
+  database.redis: "Redis Cache"
+
+# Define field descriptions that will appear as help text
+field_descriptions:
+  # Docker Image
+  image.tag: "Docker image tag to deploy. Update this to deploy a different version."
+  image.repository: "Docker image repository (read-only). Contact DevOps to change."
+  image.registry: "Docker image registry (read-only). Contact DevOps to change."
+  image.pullPolicy: "Image pull policy for Kubernetes (read-only)."
+
+  # Service
+  service.port: "Port number for the Kubernetes service."
+  service.type: "Kubernetes service type (ClusterIP, NodePort, LoadBalancer)."
+
+  # Ingress
+  ingress.enabled: "Enable or disable ingress for external access."
+  ingress.hosts: "List of hostnames and TLS configurations for ingress."
+  ingress.hosts.host: "Hostname for this ingress rule."
+  ingress.hosts.tls: "TLS configuration for this host."
+  ingress.hosts.tls.scretName: "Name of the Kubernetes secret containing TLS certificate."
+
+  # Database
+  database.postgres.host: "PostgreSQL database host address."
+  database.postgres.user: "PostgreSQL database username."
+  database.postgres.pass: "PostgreSQL database password."
+  database.postgres.port: "PostgreSQL database port."
+  database.redis.host: "Redis cache host address."
+  database.redis.port: "Redis cache port."
+
+  # General
+  environments: "Available deployment environments."
+  branches: "Available Git branches for deployment."
+
+# Define sections for better UI organization
+# Each section groups related fields together
+sections:
+  - key: image
+    title: "Docker Image Configuration"
+    description: "Configure the Docker image settings for your deployment"
+    icon: "image"
+
+  - key: service
+    title: "Service Configuration"
+    description: "Configure Kubernetes service settings"
+    icon: "cloud"
+
+  - key: ingress
+    title: "Ingress Configuration"
+    description: "Configure ingress and external access settings"
+    icon: "public"
+
+  - key: database
+    title: "Database Configuration"
+    description: "Configure database and cache connection settings"
+    icon: "cloud"
+
+# Define field order (optional)
+# Fields will be displayed in this order within their sections
+field_order:
+  - branches
+  - environments
+  - image
+  - service
+  - ingress
+  - database
+
+# Additional UI configuration
+ui_config:
+  # Title shown in the UI
+  title: "ArgoCD Deployment Manager"
+
+  # Description shown in the UI
+  description: "Configure your Docker image tags and deployment settings for ArgoCD"
+
+  # Enable confirmation dialog before saving
+  confirm_before_save: true
+
+  # Show JSON preview toggle
+  show_json_toggle: true
+
+# Git repository configuration
+git_config:
+  # Enable Git integration
+  enabled: true # Set to true to enable Git operations
+
+  # Git repository URL (HTTPS or SSH)
+  # Examples:
+  #   HTTPS: https://github.com/username/repo.git
+  #   SSH: git@github.com:username/repo.git
+  repo_url: "git@github.com:kelechi-onyia/helm-value-files.git"
+
+  # Branch to work with
+  branch: "main"
+
+  # Path to values.yaml within the repository
+  # If values.yaml is at the root, use "values.yaml"
+  # If in a subdirectory, use "path/to/values.yaml"
+  values_path: "wordpress-dev.yaml"
+
+  # Local directory where the repo will be cloned
+  # local_path: "./git-repo"
+  local_path: "./git-repo"
+
+  # Git author information for commits
+  author_name: "Helm UI Bot"
+  author_email: "helm-ui@example.com"
+
+  # Commit message template
+  # Available variables: {timestamp}, {user}
+  commit_message_template: "Update values via Helm UI\n\nTimestamp: {timestamp}"
+
+  # Authentication (choose one method)
+  auth:
+    # Method: "token" or "ssh"
+    method: "ssh"
+
+    # For HTTPS with personal access token
+    token: "" # GitHub Personal Access Token or GitLab Access Token
+
+    # For SSH authentication
+    ssh_key_path: "~/.ssh/id_rsa" # Path to private SSH key (e.g., ~/.ssh/id_rsa)
+
+  # Auto-sync options
+  auto_pull_on_start: true # Pull latest changes when backend starts
+  auto_push_on_update: true # Automatically push changes after update
+
