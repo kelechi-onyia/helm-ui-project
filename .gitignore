@@ -26,3 +26,6 @@ yarn-error.log*
 **/git-repo
 
 **/__pycache__
+
+.claude 
+.env

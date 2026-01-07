@@ -1,0 +1,58 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: helm-ui-backend
+    ports:
+      - "8000:8000"
+    # volumes:
+    # Mount SSH keys for Git operations (if using SSH auth)
+    # - ${SSH_KEY_PATH:-~/.ssh}:/root/.ssh:ro
+    # Mount git-repo directory to persist cloned repositories
+    # - git-repo-data:/app/git-repo
+    env_file:
+      - .env
+    environment:
+      # Override with environment variables
+      - GIT_ENABLED=${GIT_ENABLED:-true}
+      - GIT_REPO_URL=${GIT_REPO_URL}
+      - GIT_BRANCH=${GIT_BRANCH:-main}
+      - GIT_VALUES_PATH=${GIT_VALUES_PATH:-values.yaml}
+      - GIT_LOCAL_PATH=${GIT_LOCAL_PATH:-./git-repo}
+      - GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Helm UI Bot}
+      - GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-helm-ui@example.com}
+      - GIT_AUTH_METHOD=${GIT_AUTH_METHOD:-ssh}
+      - GIT_SSH_KEY_PATH=${GIT_SSH_KEY_PATH:-~/.ssh/id_rsa}
+      - GIT_TOKEN=${GIT_TOKEN}
+      - GIT_AUTO_PULL_ON_START=${GIT_AUTO_PULL_ON_START:-true}
+      - GIT_AUTO_PUSH_ON_UPDATE=${GIT_AUTO_PUSH_ON_UPDATE:-true}
+    restart: unless-stopped
+    networks:
+      - helm-ui-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000}
+    container_name: helm-ui-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - helm-ui-network
+
+# volumes:
+#   git-repo-data:
+#     driver: local
+
+networks:
+  helm-ui-network:
+    driver: bridge
+

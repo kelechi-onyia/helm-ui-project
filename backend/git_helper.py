@@ -33,7 +33,7 @@ class GitHelper:
         self.author_email = config.get("author_email", "helm-ui@example.com")
         self.commit_message_template = config.get(
             "commit_message_template",
-            "Update values via Helm UI\n\nTimestamp: {timestamp}"
+            "Update values via Helm UI\n\nTimestamp: {timestamp}",
         )
 
         # Auth config
@@ -69,7 +69,9 @@ class GitHelper:
         if self.auth_method == "ssh" and self.ssh_key_path:
             # Expand ~ in path
             expanded_path = os.path.expanduser(self.ssh_key_path)
-            env["GIT_SSH_COMMAND"] = f"ssh -i {expanded_path} -o StrictHostKeyChecking=no"
+            env["GIT_SSH_COMMAND"] = (
+                f"ssh -i {expanded_path} -o StrictHostKeyChecking=no"
+            )
 
         return env
 
@@ -102,8 +104,11 @@ class GitHelper:
 
                     return True
                 except InvalidGitRepositoryError:
-                    logger.warning(f"{self.local_path} exists but is not a git repository. Removing...")
+                    logger.warning(
+                        f"{self.local_path} exists but is not a git repository. Removing..."
+                    )
                     import shutil
+
                     shutil.rmtree(self.local_path)
 
             # Clone repository
@@ -112,10 +117,7 @@ class GitHelper:
             env = self.get_git_env()
 
             self.repo = Repo.clone_from(
-                auth_url,
-                self.local_path,
-                branch=self.branch,
-                env=env
+                auth_url, self.local_path, branch=self.branch, env=env
             )
 
             logger.info("Repository cloned successfully")
@@ -140,13 +142,19 @@ class GitHelper:
             env = self.get_git_env()
 
             origin = self.repo.remotes.origin
+
+            # Update remote URL with auth credentials if using token
+            if self.auth_method == "token" and self.token:
+                auth_url = self.get_auth_url()
+                origin.set_url(auth_url)
+
             origin.pull(self.branch, env=env)
 
             logger.info("Pull completed successfully")
             return {
                 "success": True,
                 "message": f"Successfully pulled latest changes from {self.branch}",
-                "commit": str(self.repo.head.commit)
+                "commit": str(self.repo.head.commit),
             }
 
         except GitCommandError as e:
@@ -183,8 +191,7 @@ class GitHelper:
             if not message:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 message = self.commit_message_template.format(
-                    timestamp=timestamp,
-                    user="Helm UI"
+                    timestamp=timestamp, user="Helm UI"
                 )
 
             # Create Actor objects for commit author
@@ -192,11 +199,7 @@ class GitHelper:
             committer = Actor(self.author_name, self.author_email)
 
             # Commit
-            self.repo.index.commit(
-                message,
-                author=author,
-                committer=committer
-            )
+            self.repo.index.commit(message, author=author, committer=committer)
             logger.info(f"Changes committed: {message}")
 
             # Push
@@ -205,7 +208,13 @@ class GitHelper:
                     env = self.get_git_env()
                     origin = self.repo.remotes.origin
 
-                    logger.info(f"Attempting to push to remote: {origin.url}")
+                    # Update remote URL with auth credentials if using token
+                    if self.auth_method == "token" and self.token:
+                        auth_url = self.get_auth_url()
+                        origin.set_url(auth_url)
+                        logger.info("Updated remote URL with authentication")
+
+                    logger.info(f"Attempting to push to remote repository")
                     logger.info(f"Current branch: {self.repo.active_branch.name}")
                     logger.info(f"Using auth method: {self.auth_method}")
 
@@ -218,7 +227,7 @@ class GitHelper:
                     return {
                         "success": True,
                         "message": f"Changes committed and pushed to {self.branch}",
-                        "commit": str(self.repo.head.commit)
+                        "commit": str(self.repo.head.commit),
                     }
                 except GitCommandError as git_err:
                     logger.error(f"Git push command error: {git_err}")
@@ -226,22 +235,23 @@ class GitHelper:
                     logger.error(f"Git error stderr: {git_err.stderr}")
                     return {
                         "success": False,
-                        "message": f"Git push failed: {git_err.stderr or str(git_err)}"
+                        "message": f"Git push failed: {git_err.stderr or str(git_err)}",
                     }
                 except Exception as push_err:
                     logger.error(f"Push error: {push_err}")
                     logger.error(f"Error type: {type(push_err).__name__}")
                     import traceback
+
                     logger.error(f"Traceback: {traceback.format_exc()}")
                     return {
                         "success": False,
-                        "message": f"Push failed: {str(push_err)}"
+                        "message": f"Push failed: {str(push_err)}",
                     }
             else:
                 return {
                     "success": True,
                     "message": "Changes committed locally (auto-push disabled)",
-                    "commit": str(self.repo.head.commit)
+                    "commit": str(self.repo.head.commit),
                 }
 
         except GitCommandError as e:
@@ -259,16 +269,13 @@ class GitHelper:
             Dictionary with repository status information
         """
         if not self.is_enabled():
-            return {
-                "enabled": False,
-                "message": "Git integration is disabled"
-            }
+            return {"enabled": False, "message": "Git integration is disabled"}
 
         if not self.repo:
             return {
                 "enabled": True,
                 "initialized": False,
-                "message": "Repository not initialized"
+                "message": "Repository not initialized",
             }
 
         try:
@@ -282,22 +289,18 @@ class GitHelper:
                     "sha": str(self.repo.head.commit),
                     "message": self.repo.head.commit.message.strip(),
                     "author": str(self.repo.head.commit.author),
-                    "date": self.repo.head.commit.committed_datetime.isoformat()
+                    "date": self.repo.head.commit.committed_datetime.isoformat(),
                 },
                 "has_changes": self.repo.is_dirty(untracked_files=True),
                 "untracked_files": self.repo.untracked_files,
-                "modified_files": [item.a_path for item in self.repo.index.diff(None)]
+                "modified_files": [item.a_path for item in self.repo.index.diff(None)],
             }
 
             return status
 
         except Exception as e:
             logger.error(f"Error getting repository status: {str(e)}")
-            return {
-                "enabled": True,
-                "initialized": True,
-                "error": str(e)
-            }
+            return {"enabled": True, "initialized": True, "error": str(e)}
 
     def get_values_file_path(self) -> str:
         """Get the full path to the values.yaml file in the repository."""
@@ -321,9 +324,11 @@ class GitHelper:
         try:
             target_path = self.get_values_file_path()
             import shutil
+
             shutil.copy2(source_path, target_path)
             logger.info(f"Values file synced from {source_path} to {target_path}")
             return True
         except Exception as e:
             logger.error(f"Error syncing values file: {str(e)}")
             return False
+

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Local git repository (will be cloned fresh in container)
+git-repo/
+
+# Documentation
+README.md
+*.md
+
+# Test files
+tests/
+*.test.py
+
+# Environment files
+.env
+.env.local
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

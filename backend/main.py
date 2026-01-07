@@ -9,6 +9,7 @@ import logging
 import os
 import re
 from git_helper import GitHelper
+from env_config import load_config_with_env
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,20 +32,27 @@ class UpdateRequest(BaseModel):
 
 
 def load_config():
-    """Load configuration from config.yaml."""
+    """Load configuration from config.yaml and merge with environment variables."""
     try:
+        file_config = {}
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, "r") as file:
-                return yaml.safe_load(file) or {}
+                file_config = yaml.safe_load(file) or {}
         else:
-            logging.warning(f"Config file {CONFIG_FILE} not found. Using defaults.")
-            return {
+            logging.warning(f"Config file {CONFIG_FILE} not found. Using defaults with environment variable overrides.")
+            file_config = {
                 "readonly_fields": [],
                 "enum_fields": [],
                 "field_descriptions": {},
                 "sections": [],
-                "ui_config": {}
+                "ui_config": {},
+                "git_config": {}
             }
+
+        # Merge with environment variables
+        final_config = load_config_with_env(file_config)
+        return final_config
+
     except Exception as e:
         logging.error(f"Error loading config: {str(e)}")
         return {
@@ -52,7 +60,8 @@ def load_config():
             "enum_fields": [],
             "field_descriptions": {},
             "sections": [],
-            "ui_config": {}
+            "ui_config": {},
+            "git_config": {}
         }
 
 

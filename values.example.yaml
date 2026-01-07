@@ -32,7 +32,7 @@ database:
   postgres:
     host: 127.0.0.1
     user: postgres
-    pass: hackerman
+    pass: postgres
     port: 5432
   redis:
     host: 127.0.0.1
