@@ -556,7 +556,7 @@ MIT License - feel free to use this in your projects!
 - [ ] Custom widgets (date picker, color picker)
 - [ ] Export/Import configurations
 - [ ] Real-time collaboration
-- [ ] Webhook integrations for ArgoCD sync
+- [ ] Webhook or Kubernetes operator for ArgoCD sync integration
 
 ## Support
 
