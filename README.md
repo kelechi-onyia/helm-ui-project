@@ -1,17 +1,15 @@
 # Helm UI - Dynamic Configuration Manager for ArgoCD
 
-A configuration-driven web UI for managing Helm values and deploying Docker images via ArgoCD. This project automatically generates user-friendly forms from your `values.yaml` file with full Git integration and customization through a simple configuration file.
+A configuration-driven web UI for managing Helm values and deploying Docker images via ArgoCD. This project automatically generates user-friendly forms from your `values.yaml` file with full Git integration and customization through a simple configuration file. The goal is to provide simple interface for developers and DevOps teams to manage Helm chart values without needing to edit YAML files directly. Aligned with ArgoCD, one can split the `values.yaml` and provide a self-service UI for developers to update image tags and other deployment settings.
 
 ## Features
 
 ### Core Features
 - **Fully Dynamic UI**: Automatically generates forms from any `values.yaml` file
 - **No Code Required**: Customize behavior through `config.yaml` without touching code
-- **Material-UI Design**: Professional, polished interface with Material Design
 - **Read-Only Fields**: Protect critical infrastructure values
 - **Organized Sections**: Group related fields with collapsible accordions
 - **Field Descriptions**: Add helpful context to any field
-- **Responsive Design**: Works on desktop, tablet, and mobile
 
 ### Git Integration
 - **Automatic Sync**: Pull latest changes on page refresh/reload
@@ -240,19 +238,56 @@ No code changes required!
 
 ## Screenshots
 
-### Before (Generic Form)
-- Basic HTML form
-- No organization
-- No validation feedback
-- Confusing layout
+### collapsible Sections 1
+![collapsible ui generated](img/ui-1.png)
 
-### After (Material-UI)
-- Professional design
-- Organized sections with icons
-- Clear read-only indicators
-- Field descriptions
-- Confirmation dialogs
-- Mobile responsive
+### collapsible Sections 2
+![collapsible ui generated](img/ui-2.png)
+
+### Integration with ArgoCD
+![wordpress application in argocd](img/argo-app.png)
+
+### Sample argo-cd Application YAML
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wordpress-dev
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: registry-1.docker.io/bitnamicharts
+      chart: wordpress
+      targetRevision: 28.0.4
+      helm:
+        releaseName: wordpress-dev
+        valueFiles:
+          - $values/argo-apps/dev/values/wordpress.yaml     # Main values file
+          - $imagetagvalues/wordpress-dev.yaml              # A different repo for image tag overrides
+    - repoURL: "https://github.com/smarty24/homelab.git"
+      targetRevision: HEAD
+      ref: values
+    - repoURL: "https://github.com/kelechi-onyia/helm-value-files.git" 
+      targetRevision: HEAD
+      ref: imagetagvalues
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: wordpress-dev
+  syncPolicy:
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 5
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
 
 ## Development
 
@@ -326,15 +361,107 @@ REACT_APP_API_URL=http://127.0.0.1:8000
 - CORS protection
 - Input validation via JSON Schema
 
+>[!IMPORTANT] Security Notice
+> More emphasis should be placed on securing the UI and backend communication.
+
 ## Deployment
 
-### Docker (Coming Soon)
+### Docker Deployment (Recommended)
+
+#### Quick Start with Docker
+
+1. **Copy environment configuration:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` file with your settings:**
+   ```bash
+   # Update Git repository URL
+   GIT_REPO_URL=git@github.com:username/repo.git
+
+   # Configure authentication
+   GIT_AUTH_METHOD=ssh
+   GIT_SSH_KEY_PATH=~/.ssh/id_rsa
+
+   # Or use token auth
+   # GIT_AUTH_METHOD=token
+   # GIT_TOKEN=ghp_your_token_here
+   ```
+
+3. **Build and start containers:**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+
+#### Docker Commands
 
 ```bash
-docker-compose up
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build
+
+# View running containers
+docker ps
 ```
 
-### Production Build
+#### Environment Variable Configuration
+
+The application supports full configuration via environment variables, which override `config.yaml` settings:
+
+**Git Configuration:**
+- `GIT_ENABLED` - Enable/disable Git integration (true/false)
+- `GIT_REPO_URL` - Git repository URL
+- `GIT_BRANCH` - Branch to use (default: main)
+- `GIT_VALUES_PATH` - Path to values.yaml in repo
+- `GIT_LOCAL_PATH` - Local clone directory
+- `GIT_AUTHOR_NAME` - Commit author name
+- `GIT_AUTHOR_EMAIL` - Commit author email
+- `GIT_AUTH_METHOD` - Authentication method (ssh/token)
+- `GIT_SSH_KEY_PATH` - Path to SSH private key
+- `GIT_TOKEN` - Personal access token (for HTTPS)
+- `GIT_AUTO_PULL_ON_START` - Auto-pull on startup
+- `GIT_AUTO_PUSH_ON_UPDATE` - Auto-push on save
+
+See `.env.example` for complete configuration options and examples.
+
+#### SSH Key Setup for Docker
+
+When using SSH authentication with Docker:
+
+1. **Ensure SSH keys exist:**
+   ```bash
+   ls -la ~/.ssh/id_rsa
+   ```
+
+2. **Set correct permissions:**
+   ```bash
+   chmod 600 ~/.ssh/id_rsa
+   chmod 644 ~/.ssh/id_rsa.pub
+   ```
+
+3. **The docker-compose.yml automatically mounts ~/.ssh directory** as read-only
+   - To use a different SSH key, update `SSH_KEY_PATH` in `.env`
+
+4. **Test SSH connection to your Git provider:**
+   ```bash
+   ssh -T git@github.com
+   ```
+
+### Build (Without Docker)
 
 ```bash
 # Backend
@@ -347,6 +474,15 @@ cd frontend
 npm run build
 # Serve the build folder with nginx or similar
 ```
+
+### Deployment Best Practices
+
+1. **Use environment variables** for all sensitive configuration (tokens, SSH keys)
+2. **Mount persistent volumes** for Git repositories to preserve clones between restarts
+3. **Set up reverse proxy** (nginx/traefik) for SSL/TLS termination
+4. **Configure health checks** for container orchestration
+5. **Use secrets management** (Docker secrets, Kubernetes secrets) for tokens
+6. **Set resource limits** in docker-compose.yml for production workloads
 
 ## Troubleshooting
 
@@ -402,16 +538,17 @@ MIT License - feel free to use this in your projects!
 
 ## Roadmap
 
-### Completed Features ✅
+### Completed Features
 - [x] Git integration (clone, pull, push)
 - [x] Automatic sync on refresh and save
 - [x] Visual diff view before save
 - [x] Change detection and tracking
 - [x] SSH and token authentication
+- [x] Docker containerization with docker-compose
+- [x] Environment variable configuration
 
 ### Planned Features
-- [ ] Docker containerization
-- [ ] Authentication/Authorization
+- [ ] Authentication/Authorization - Maybe OAuth2-Proxy or similar
 - [ ] Multi-file support (edit multiple values files)
 - [ ] Version history/rollback (Git commit history viewer)
 - [ ] Advanced field validation rules (regex, min/max)
