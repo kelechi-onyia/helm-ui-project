@@ -244,6 +244,9 @@ No code changes required!
 ### collapsible Sections 2
 ![collapsible ui generated](img/ui-2.png)
 
+### collapsible Sections 3
+![collapsible ui generated](img/ui-3.png)
+
 ### Integration with ArgoCD
 ![wordpress application in argocd](img/argo-app.png)
 
